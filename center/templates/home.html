@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snooker Gaming Center</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101820;
+            color: white;
+        }
+
+        nav {
+            background: #172b25;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        nav h2 {
+            color: gold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: gold;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 90px 20px;
+            background: linear-gradient(135deg, #064b32, #101820);
+        }
+
+        .hero h1 {
+            color: gold;
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 25px;
+            background: gold;
+            color: black;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 8px;
+            font-weight: bold;
+        }
+
+        .sections {
+            padding: 45px 20px;
+            text-align: center;
+        }
+
+        .sections h2 {
+            color: gold;
+            margin-bottom: 25px;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #20352d;
+            padding: 30px;
+            width: 260px;
+            border-radius: 12px;
+        }
+
+        .card h3 {
+            color: gold;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            background: #172b25;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h2>SNOOKER CENTER</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="{% url 'game' %}">Play Game</a>
+        <a href="{% url 'tables' %}">Tables</a>
+        <a href="{% url 'book_table' %}">Book Table</a>
+
+        {% if user.is_authenticated %}
+            <span>Welcome, {{ user.username }}</span>
+            <form method="POST" action="{% url 'user_logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'user_login' %}">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>WELCOME TO SNOOKER GAMING CENTER</h1>
+    <p>Enjoy the game. Improve your skills. Challenge yourself!</p>
+
+    <a href="{% url 'game' %}" class="btn">PLAY SNOOKER</a>
+    <a href="{% url 'book_table' %}" class="btn">BOOK A TABLE</a>
+</section>
+
+<section class="sections">
+    <h2>OUR SERVICES</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Snooker Game</h3>
+            <p>Enter the snooker table and enjoy playing.</p>
+            <a href="{% url 'game' %}" class="btn">Play Now</a>
+        </div>
+
+        <div class="card">
+            <h3>Table Details</h3>
+            <p>Explore the available snooker tables.</p>
+            <a href="{% url 'tables' %}" class="btn">View Tables</a>
+        </div>
+
+        <div class="card">
+            <h3>Table Booking</h3>
+            <p>Reserve a table for your playing session.</p>
+            <a href="{% url 'book_table' %}" class="btn">Book Now</a>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Snooker Gaming Center | Enjoy Your Game</p>
+</footer>
+
+</body>
+</html>

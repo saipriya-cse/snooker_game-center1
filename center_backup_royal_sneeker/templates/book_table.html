@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Snooker Table</title>
+    <style>
+        body {
+            background: #101820;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 30px;
+        }
+        h1 { color: gold; }
+        form {
+            background: #20352d;
+            padding: 30px;
+            width: 320px;
+            margin: 30px auto;
+            border-radius: 12px;
+        }
+        input, select, button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background: gold;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        a { color: gold; }
+    </style>
+</head>
+<body>
+    <h1>BOOK YOUR SNOOKER TABLE</h1>
+
+    <form>
+        <input type="text" placeholder="Your Name" required>
+        <input type="date" required>
+        <input type="time" required>
+
+        <select required>
+            <option value="">Select Table</option>
+            <option>Table 1</option>
+            <option>Table 2</option>
+            <option>Table 3</option>
+        </select>
+
+        <button type="submit">Submit Booking</button>
+    </form>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>

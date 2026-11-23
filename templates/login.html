@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Royal Snooker - Login</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #061b12, #17613a);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 400px;
+            max-width: 100%;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 35px #0008;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #14532d;
+        }
+
+        h2 { margin-bottom: 25px; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 6px;
+            background: #14532d;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #0b3820; }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            line-height: 2;
+        }
+
+        a { color: #14532d; text-decoration: none; }
+
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎱 ROYAL SNOOKER</h1>
+    <h2>LOGIN</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Username</label>
+        <input type="text"
+               name="username"
+               placeholder="Enter username"
+               required>
+
+        <label>Password</label>
+        <input type="password"
+               name="password"
+               placeholder="Enter password"
+               required>
+
+        <button type="submit">LOGIN</button>
+    </form>
+
+    <div class="links">
+        New user?
+        <a href="{% url 'register' %}">Create an account</a>
+        <br>
+        <a href="{% url 'home' %}">Back to Home</a>
+    </div>
+
+</div>
+
+</body>
+</html>

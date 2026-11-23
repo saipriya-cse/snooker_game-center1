@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Royal Snooker</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #07100d;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 480px;
+            padding: 35px;
+            text-align: center;
+            background: #14251d;
+            border: 1px solid #c5a34a;
+            border-radius: 15px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #e5c46b;
+        }
+
+        p {
+            line-height: 1.7;
+            color: #ddd;
+            overflow-wrap: anywhere;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: #c5a34a;
+            color: #111;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check Your Email</h1>
+
+        <p>Your Royal Snooker account has been created.</p>
+
+        <p>
+            We sent a verification link to:
+            <strong>{{ email }}</strong>
+        </p>
+
+        <p>
+            Open your email and click the verification link.
+            The link expires after 24 hours.
+        </p>
+
+        <a href="{% url 'login' %}">Go to Login</a>
+    </div>
+</body>
+</html>

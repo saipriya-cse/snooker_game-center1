@@ -1,0 +1,149 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROYAL SNOOKER</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="{% url 'home' %}" class="brand">
+        <span class="brand-icon">🎱</span>
+        <span class="brand-name">ROYAL <span>SNOOKER</span></span>
+    </a>
+
+    <nav class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'tables' %}">The Floor</a>
+        <a href="#contact">Find Us</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'book_table' %}" class="nav-book">Book a Table</a>
+    </nav>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+</header>
+
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+
+        <div class="hero-logo">
+            <div class="controller">🎱</div>
+            <div class="logo-box">
+                <h1>ROYAL</h1>
+                <h2>SNOOKER</h2>
+            </div>
+            <div class="logo-underline"></div>
+        </div>
+
+        <p class="hero-description">
+            Enjoy an exciting snooker experience.
+            Book your favourite table and challenge your friends.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="{% url 'book_table' %}" class="btn btn-green">
+                Book a Table
+            </a>
+
+            <a href="{% url 'tables' %}" class="btn btn-outline">
+                Explore Tables
+            </a>
+
+            <a href="#contact" class="btn btn-outline">
+                Contact Us
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div>
+                <strong>05+</strong>
+                <span>Snooker Tables</span>
+            </div>
+            <div>
+                <strong>24/7</strong>
+                <span>Entertainment</span>
+            </div>
+            <div>
+                <strong>100%</strong>
+                <span>Fun Guaranteed</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="floor-section" id="floor">
+    <div class="section-heading">
+        <span class="small-heading">ENTER THE EXPERIENCE</span>
+        <h2>Explore Our <span>Snooker Floor</span></h2>
+        <p>Choose your table. Challenge your friends. Enjoy the game.</p>
+    </div>
+
+    <div class="game-grid">
+        <div class="game-card snooker">
+            <div class="game-icon">🎱</div>
+            <h3>Snooker</h3>
+            <p>Enjoy an exciting snooker experience.</p>
+            <a href="{% url 'tables' %}">Explore →</a>
+        </div>
+
+        <div class="game-card pool">
+            <div class="game-icon">🏆</div>
+            <h3>Book a Table</h3>
+            <p>Choose your preferred table and time.</p>
+            <a href="{% url 'book_table' %}">Book Now →</a>
+        </div>
+
+        <div class="game-card challenge">
+            <div class="game-icon">🎮</div>
+            <h3>My Bookings</h3>
+            <p>View your previous and current bookings.</p>
+            <a href="{% url 'my_bookings' %}">View Bookings →</a>
+        </div>
+    </div>
+</section>
+
+<section class="booking-section">
+    <div>
+        <span class="small-heading">YOUR GAME STARTS HERE</span>
+        <h2>Ready to Play Snooker?</h2>
+        <p>Bring your friends and enjoy the game.</p>
+    </div>
+
+    <a href="{% url 'book_table' %}" class="btn btn-green">
+        Book Your Table →
+    </a>
+</section>
+
+<footer id="contact">
+    <div class="footer-brand">
+        🎱 ROYAL SNOOKER
+        <p>Play More. Experience More.</p>
+    </div>
+
+    <div class="footer-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'tables' %}">Tables</a>
+        <a href="{% url 'book_table' %}">Booking</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+    </div>
+
+    <p class="copyright">
+        © 2026 Royal Snooker. All Rights Reserved.
+    </p>
+</footer>
+
+<script>
+    function toggleMenu() {
+        document.querySelector(".nav-links").classList.toggle("active");
+    }
+</script>
+
+</body>
+</html>

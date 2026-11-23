@@ -1,0 +1,813 @@
+
+{% extends "base.html" %}
+
+{% block title %}3D Snooker Arena{% endblock %}
+
+{% block content %}
+
+<style>
+* { box-sizing: border-box; }
+
+.game-wrapper {
+    background: #101713;
+    color: white;
+    padding: 18px;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.game-header h1 {
+    color: #e9c46a;
+    margin: 0;
+}
+
+.game-header p {
+    color: #bbb;
+}
+
+.game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 15px;
+}
+
+#sceneContainer {
+    height: 650px;
+    min-height: 400px;
+    position: relative;
+    background: #080d0a;
+    border: 2px solid #b18b48;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#snookerCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+#snookerCanvas canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #e9c46a;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.panel {
+    background: #1b2921;
+    border: 1px solid #536d58;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.panel h3 {
+    color: #e9c46a;
+    font-size: 15px;
+    margin-top: 0;
+}
+
+.player {
+    background: #304235;
+    padding: 12px;
+    border-radius: 7px;
+    margin-bottom: 9px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.player.active {
+    border: 2px solid #e9c46a;
+}
+
+.score {
+    font-size: 22px;
+    color: #e9c46a;
+}
+
+.control-label {
+    display: block;
+    margin: 14px 0 5px;
+    font-size: 13px;
+}
+
+input[type=range] {
+    width: 100%;
+    accent-color: #e9c46a;
+}
+
+.game-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #e9c46a;
+    color: #172018;
+    font-weight: bold;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+.game-btn:hover {
+    background: #f6d78c;
+}
+
+.game-btn.secondary {
+    background: #49634f;
+    color: white;
+}
+
+#message {
+    color: #e9c46a;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 45px;
+}
+
+.instructions {
+    font-size: 12px;
+    color: #c4d0c7;
+    line-height: 1.8;
+}
+
+@media(max-width:850px) {
+    .game-layout { grid-template-columns: 1fr; }
+    #sceneContainer { height: 480px; }
+}
+</style>
+
+<div class="game-wrapper">
+
+    <div class="game-header">
+        <div>
+            <h1>3D SNOOKER ARENA</h1>
+            <p>Professional Snooker Gaming Center</p>
+        </div>
+        <strong style="color:#e9c46a">TWO PLAYER GAME</strong>
+    </div>
+
+    <div class="game-layout">
+
+        <div id="sceneContainer">
+            <div class="loading" id="loadingMessage">
+                Loading 3D Snooker Arena...<br>
+                Please wait.
+            </div>
+            <div id="snookerCanvas"></div>
+        </div>
+
+        <div class="panel">
+
+            <h3>PLAYER SCOREBOARD</h3>
+
+            <div class="player active" id="player1">
+                <div>
+                    <strong>PLAYER 1</strong><br>
+                    <small>Blue shirt</small>
+                </div>
+                <span class="score" id="score1">0</span>
+            </div>
+
+            <div class="player" id="player2">
+                <div>
+                    <strong>PLAYER 2</strong><br>
+                    <small>Red shirt</small>
+                </div>
+                <span class="score" id="score2">0</span>
+            </div>
+
+            <p>Turn: <strong id="turn">Player 1</strong></p>
+
+            <hr>
+
+            <h3>CUE CONTROLS</h3>
+
+            <label class="control-label">
+                Aim angle: <span id="angleValue">0°</span>
+            </label>
+            <input type="range" id="angle" min="-180" max="180" value="0">
+
+            <label class="control-label">
+                Shot power: <span id="powerValue">55%</span>
+            </label>
+            <input type="range" id="power" min="10" max="100" value="55">
+
+            <button class="game-btn" id="shoot">SHOOT</button>
+            <button class="game-btn secondary" id="reset">RESET GAME</button>
+
+            <hr>
+
+            <h3>GAME MESSAGE</h3>
+            <div id="message">Player 1, aim and take your shot.</div>
+
+            <hr>
+
+            <h3>HOW TO PLAY</h3>
+            <div class="instructions">
+                • Change aim using the angle slider.<br>
+                • Change power using the power slider.<br>
+                • Click SHOOT to hit the cue ball.<br>
+                • Drag mouse to rotate camera.<br>
+                • Scroll to zoom.<br>
+                • Use W, A, S, D to move Player 1.
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Three.js import map must appear before the module script -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+try {
+
+const container = document.getElementById("snookerCanvas");
+const loading = document.getElementById("loadingMessage");
+const message = document.getElementById("message");
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111b15);
+scene.fog = new THREE.Fog(0x111b15, 25, 48);
+
+const camera = new THREE.PerspectiveCamera(
+    45, 1, 0.1, 100
+);
+camera.position.set(11, 12, 14);
+
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+
+container.appendChild(renderer.domElement);
+
+const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.enableDamping = true;
+orbit.target.set(0, 0.8, 0);
+orbit.maxPolarAngle = Math.PI / 2.05;
+orbit.minDistance = 8;
+orbit.maxDistance = 25;
+
+function resize() {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+}
+resize();
+window.addEventListener("resize", resize);
+
+// Lighting
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x34402d, 2));
+
+const sunlight = new THREE.DirectionalLight(0xffe7b6, 3);
+sunlight.position.set(-5, 13, 7);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.set(2048, 2048);
+scene.add(sunlight);
+
+for (const x of [-3, 0, 3]) {
+    const light = new THREE.PointLight(0xffd995, 55, 13);
+    light.position.set(x, 6, 0);
+    scene.add(light);
+}
+
+// Materials
+
+const mat = (color, roughness=0.65, metalness=0) =>
+    new THREE.MeshStandardMaterial({
+        color, roughness, metalness
+    });
+
+const wood = mat(0x61391f);
+const darkWood = mat(0x29180f);
+const cloth = mat(0x087343, 0.95);
+const gold = mat(0xc79b4d, 0.35, 0.5);
+const floorMat = mat(0x293b30);
+const black = mat(0x080808);
+
+// Helper
+
+function box(x,y,z,sx,sy,sz,material,parent=scene) {
+    const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(sx,sy,sz), material
+    );
+    mesh.position.set(x,y,z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    parent.add(mesh);
+    return mesh;
+}
+
+// Hall
+
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(45,45), floorMat
+);
+floor.rotation.x = -Math.PI/2;
+floor.position.y = -0.2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+box(0,4,-9,24,8,0.3,darkWood);
+box(-12,4,0,0.3,8,18,darkWood);
+box(12,4,0,0.3,8,18,darkWood);
+
+for(let x=-9;x<=9;x+=3) {
+    box(x,3.5,-8.78,1.8,3.8,0.08,wood);
+    box(x,5.45,-8.7,1.8,0.05,0.05,gold);
+}
+
+// Table
+
+const table = new THREE.Group();
+scene.add(table);
+
+const tableTop = 0.9;
+const radius = 0.22;
+
+box(0,0.48,0,12.8,0.65,6.8,wood,table);
+box(0,tableTop,0,12,0.12,6,cloth,table);
+
+for(const x of [-5.3,5.3]) {
+    for(const z of [-2.5,2.5]) {
+        box(x,-0.25,z,0.55,1.5,0.55,darkWood,table);
+    }
+}
+
+// Rails
+
+box(-6.15,1.45,0,0.35,0.55,6.8,wood,table);
+box(6.15,1.45,0,0.35,0.55,6.8,wood,table);
+box(0,1.45,-3.15,12.5,0.55,0.35,wood,table);
+box(0,1.45,3.15,12.5,0.55,0.35,wood,table);
+
+// Pockets
+
+const pocketPositions = [
+    [-6,-3],[0,-3],[6,-3],
+    [-6,3],[0,3],[6,3]
+];
+
+const pockets = [];
+
+for(const [x,z] of pocketPositions) {
+    const p = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.39,0.42,0.1,32),
+        black
+    );
+    p.position.set(x,tableTop+0.09,z);
+    table.add(p);
+    pockets.push({x,z});
+}
+
+// Table markings
+
+function line(points) {
+    const geometry = new THREE.BufferGeometry().setFromPoints(
+        points.map(([x,z]) => new THREE.Vector3(x,tableTop+0.065,z))
+    );
+    const obj = new THREE.Line(
+        geometry,
+        new THREE.LineBasicMaterial({color:0xffffff})
+    );
+    table.add(obj);
+}
+
+line([[-4,-2.9],[-4,2.9]]);
+line([[-6,0],[-4,0]]);
+line([[-4,-1.1],[-4,1.1]]);
+
+// Player models
+
+function makePlayer(shirtColor) {
+    const person = new THREE.Group();
+    const shirt = mat(shirtColor);
+    const trousers = mat(0x252932);
+    const skin = mat(0xd49b72);
+    const shoes = mat(0x101010);
+    const hair = mat(0x20140e);
+
+    function part(geometry, material, x,y,z) {
+        const mesh = new THREE.Mesh(geometry,material);
+        mesh.position.set(x,y,z);
+        mesh.castShadow = true;
+        person.add(mesh);
+        return mesh;
+    }
+
+    part(new THREE.CylinderGeometry(.14,.16,.85,16),
+        trousers,-.17,.65,0);
+    part(new THREE.CylinderGeometry(.14,.16,.85,16),
+        trousers,.17,.65,0);
+
+    part(new THREE.BoxGeometry(.32,.15,.48),
+        shoes,-.17,.17,.08);
+    part(new THREE.BoxGeometry(.32,.15,.48),
+        shoes,.17,.17,.08);
+
+    part(new THREE.CylinderGeometry(.25,.32,1.05,20),
+        shirt,0,1.55,0);
+
+    part(new THREE.CylinderGeometry(.09,.1,.18,16),
+        skin,0,2.16,0);
+
+    part(new THREE.SphereGeometry(.29,24,24),
+        skin,0,2.48,0);
+
+    part(new THREE.SphereGeometry(.295,20,12,0,Math.PI*2,0,Math.PI/2),
+        hair,0,2.56,0);
+
+    const leftArm = part(
+        new THREE.CylinderGeometry(.09,.11,.85,12),
+        shirt,-.37,1.55,0
+    );
+    leftArm.rotation.z=.35;
+
+    const rightArm = part(
+        new THREE.CylinderGeometry(.09,.11,.85,12),
+        shirt,.37,1.55,0
+    );
+    rightArm.rotation.z=-.35;
+
+    part(new THREE.SphereGeometry(.11,12,12),
+        skin,-.52,1.15,0);
+    part(new THREE.SphereGeometry(.11,12,12),
+        skin,.52,1.15,0);
+
+    return person;
+}
+
+const player1 = makePlayer(0x1753bc);
+player1.position.set(-1.5,0,4.5);
+scene.add(player1);
+
+const player2 = makePlayer(0xb72c29);
+player2.position.set(1.5,0,-4.5);
+scene.add(player2);
+
+// Balls
+
+const balls = [];
+
+function addBall(color,x,z,name,points) {
+    const ball = new THREE.Mesh(
+        new THREE.SphereGeometry(radius,32,32),
+        new THREE.MeshStandardMaterial({
+            color,roughness:0.16
+        })
+    );
+    ball.position.set(x,tableTop+radius,z);
+    ball.castShadow=true;
+    ball.userData={
+        name,points,vx:0,vz:0,active:true
+    };
+    table.add(ball);
+    balls.push(ball);
+    return ball;
+}
+
+const cueBall = addBall(0xffffff,-3.2,0,"White",0);
+
+for(let row=0;row<5;row++) {
+    for(let col=0;col<=row;col++) {
+        const z=(col-row/2)*0.46;
+        addBall(0xc81717,2.8+row*.4,z,"Red",1);
+    }
+}
+
+addBall(0xf1d02c,-4.8,-1,"Yellow",2);
+addBall(0x1d963f,-4.8,1,"Green",3);
+addBall(0x824b2a,-4.8,0,"Brown",4);
+addBall(0x1556d6,0,0,"Blue",5);
+addBall(0xe77da7,2,0,"Pink",6);
+addBall(0x151515,4.8,0,"Black",7);
+
+// Cue stick
+
+const cue = new THREE.Group();
+
+const shaft = new THREE.Mesh(
+    new THREE.CylinderGeometry(.035,.055,4.2,16),
+    mat(0xb98745,.35)
+);
+shaft.rotation.x=Math.PI/2;
+cue.add(shaft);
+
+scene.add(cue);
+
+// Game state
+
+let currentPlayer=1;
+let score1=0;
+let score2=0;
+let moving=false;
+let playerX=-1.5;
+let playerZ=4.5;
+
+const angle=document.getElementById("angle");
+const power=document.getElementById("power");
+
+angle.addEventListener("input",()=>{
+    document.getElementById("angleValue").textContent=angle.value+"°";
+});
+
+power.addEventListener("input",()=>{
+    document.getElementById("powerValue").textContent=power.value+"%";
+});
+
+function display() {
+    document.getElementById("score1").textContent=score1;
+    document.getElementById("score2").textContent=score2;
+    document.getElementById("turn").textContent="Player "+currentPlayer;
+    document.getElementById("player1").classList.toggle("active",currentPlayer===1);
+    document.getElementById("player2").classList.toggle("active",currentPlayer===2);
+}
+
+// Cue aiming
+
+function direction() {
+    const a=THREE.MathUtils.degToRad(Number(angle.value));
+    return new THREE.Vector3(Math.cos(a),0,Math.sin(a));
+}
+
+function updateCue() {
+    if(moving || !cueBall.userData.active) {
+        cue.visible=false;
+        return;
+    }
+
+    cue.visible=true;
+
+    const d=direction();
+    cue.position.set(
+        cueBall.position.x-d.x*2.5,
+        tableTop+radius+0.08,
+        cueBall.position.z-d.z*2.5
+    );
+
+    cue.lookAt(
+        cueBall.position.x,
+        cue.position.y,
+        cueBall.position.z
+    );
+}
+
+// Shooting
+
+document.getElementById("shoot").addEventListener("click",()=>{
+    if(moving) {
+        message.textContent="Wait until all balls stop.";
+        return;
+    }
+
+    if(!cueBall.userData.active) {
+        message.textContent="Cue ball is pocketed. Reset the game.";
+        return;
+    }
+
+    const d=direction();
+    const p=Number(power.value)/100;
+
+    cueBall.userData.vx=d.x*p*.23;
+    cueBall.userData.vz=d.z*p*.23;
+
+    moving=true;
+    message.textContent="Player "+currentPlayer+" has taken a shot.";
+});
+
+// Physics
+
+function physics() {
+    if(!moving) return;
+
+    let anyMoving=false;
+
+    for(const ball of balls) {
+        const data=ball.userData;
+        if(!data.active) continue;
+
+        ball.position.x+=data.vx;
+        ball.position.z+=data.vz;
+
+        data.vx*=.985;
+        data.vz*=.985;
+
+        if(Math.abs(data.vx)<.001) data.vx=0;
+        if(Math.abs(data.vz)<.001) data.vz=0;
+
+        if(data.vx!==0 || data.vz!==0) anyMoving=true;
+
+        if(ball.position.x>5.75) {
+            ball.position.x=5.75;
+            data.vx*=-.8;
+        }
+        if(ball.position.x< -5.75) {
+            ball.position.x=-5.75;
+            data.vx*=-.8;
+        }
+        if(ball.position.z>2.75) {
+            ball.position.z=2.75;
+            data.vz*=-.8;
+        }
+        if(ball.position.z< -2.75) {
+            ball.position.z=-2.75;
+            data.vz*=-.8;
+        }
+
+        for(const pocket of pockets) {
+            const distance=Math.hypot(
+                ball.position.x-pocket.x,
+                ball.position.z-pocket.z
+            );
+
+            if(distance<.36) {
+                data.active=false;
+                ball.visible=false;
+
+                if(data.name==="White") {
+                    message.textContent="Foul! Cue ball pocketed.";
+                } else {
+                    if(currentPlayer===1) score1+=data.points;
+                    else score2+=data.points;
+
+                    message.textContent=
+                        data.name+" ball pocketed! +"+data.points+" points.";
+                }
+
+                display();
+                break;
+            }
+        }
+    }
+
+    // Ball collisions
+
+    for(let i=0;i<balls.length;i++) {
+        const a=balls[i];
+        if(!a.userData.active) continue;
+
+        for(let j=i+1;j<balls.length;j++) {
+            const b=balls[j];
+            if(!b.userData.active) continue;
+
+            const dx=b.position.x-a.position.x;
+            const dz=b.position.z-a.position.z;
+            const dist=Math.hypot(dx,dz);
+
+            if(dist>0 && dist<radius*2) {
+                const nx=dx/dist;
+                const nz=dz/dist;
+
+                const relative=
+                    (a.userData.vx-b.userData.vx)*nx+
+                    (a.userData.vz-b.userData.vz)*nz;
+
+                if(relative>0) {
+                    a.userData.vx-=relative*nx*.9;
+                    a.userData.vz-=relative*nz*.9;
+                    b.userData.vx+=relative*nx*.9;
+                    b.userData.vz+=relative*nz*.9;
+                }
+
+                const overlap=radius*2-dist;
+                a.position.x-=nx*overlap/2;
+                a.position.z-=nz*overlap/2;
+                b.position.x+=nx*overlap/2;
+                b.position.z+=nz*overlap/2;
+            }
+        }
+    }
+
+    if(!anyMoving) {
+        moving=false;
+        currentPlayer=currentPlayer===1?2:1;
+        message.textContent="Balls stopped. Player "+currentPlayer+", your turn.";
+        display();
+    }
+}
+
+// Player movement
+
+const keys={};
+
+window.addEventListener("keydown",e=>{
+    const k=e.key.toLowerCase();
+    if(["w","a","s","d"].includes(k)) keys[k]=true;
+});
+
+window.addEventListener("keyup",e=>{
+    keys[e.key.toLowerCase()]=false;
+});
+
+function movePlayer() {
+    if(currentPlayer!==1) return;
+
+    const speed=.045;
+
+    if(keys.w) playerZ-=speed;
+    if(keys.s) playerZ+=speed;
+    if(keys.a) playerX-=speed;
+    if(keys.d) playerX+=speed;
+
+    playerX=THREE.MathUtils.clamp(playerX,-8,8);
+    playerZ=THREE.MathUtils.clamp(playerZ,3.7,7.5);
+
+    player1.position.set(playerX,0,playerZ);
+    player1.lookAt(0,0,0);
+}
+
+// Reset
+
+document.getElementById("reset").addEventListener("click",()=>{
+    for(const ball of balls) {
+        ball.userData.active=true;
+        ball.userData.vx=0;
+        ball.userData.vz=0;
+        ball.visible=true;
+    }
+
+    cueBall.position.set(-3.2,tableTop+radius,0);
+
+    score1=0;
+    score2=0;
+    currentPlayer=1;
+    moving=false;
+
+    angle.value=0;
+    power.value=55;
+
+    document.getElementById("angleValue").textContent="0°";
+    document.getElementById("powerValue").textContent="55%";
+
+    playerX=-1.5;
+    playerZ=4.5;
+    player1.position.set(playerX,0,playerZ);
+
+    message.textContent="New game! Player 1, take your shot.";
+    display();
+});
+
+// Animation
+
+function animate() {
+    requestAnimationFrame(animate);
+    physics();
+    movePlayer();
+    updateCue();
+    orbit.update();
+    renderer.render(scene,camera);
+}
+
+display();
+loading.style.display="none";
+animate();
+
+} catch(error) {
+    console.error("Snooker game error:",error);
+
+    const loading=document.getElementById("loadingMessage");
+    loading.style.display="block";
+    loading.innerHTML="3D GAME ERROR<br>Press F12 and check Console.";
+    document.getElementById("message").textContent=error.message;
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playable Snooker Game</title>
+    <link rel="stylesheet" href="{% static 'center/css/snooker.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="/" class="back-link">← Home</a>
+    <h1> SNOOKER ARENA </h1>
+    <button id="restartBtn" class="restart-btn">Restart Game</button>
+</header>
+
+<main class="game-container">
+
+    <section class="score-panel">
+        <div class="score-box">
+            <span class="small-label">YOUR SCORE</span>
+            <strong id="score">0</strong>
+        </div>
+
+        <div class="score-box">
+            <span class="small-label">BALLS POTTED</span>
+            <strong id="potted">0</strong>
+        </div>
+
+        <div class="score-box">
+            <span class="small-label">REMAINING REDS</span>
+            <strong id="reds">15</strong>
+        </div>
+    </section>
+
+    <section class="table-section">
+        <canvas id="snookerTable" width="1100" height="620">
+            Your browser does not support canvas.
+        </canvas>
+    </section>
+
+    <section class="controls">
+        <div class="power-control">
+            <label for="power">SHOT POWER</label>
+            <input type="range" id="power" min="3" max="15" value="8">
+            <span id="powerValue">8</span>
+        </div>
+
+        <button id="shootBtn" class="shoot-btn">SHOOT</button>
+        <button id="placeBtn" class="place-btn" hidden>PLACE CUE BALL</button>
+    </section>
+
+    <p id="status">Move your mouse over the table to aim. Select power and press SHOOT.</p>
+
+    <p class="instructions">
+        Controls: Move mouse to aim • Adjust power • Press SHOOT.
+        Wait until all balls stop before taking another shot.
+    </p>
+
+</main>
+
+<script src="{% static 'center/js/game.js' %}"></script>
+</body>
+</html>

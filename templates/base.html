@@ -1,0 +1,96 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Snooker Gaming Center{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .main-header {
+            background: linear-gradient(120deg, #071d15, #175b3b);
+            color: white;
+            padding: 24px 15px;
+            text-align: center;
+        }
+        .main-header h1 {
+            color: #f0ca58;
+            letter-spacing: 2px;
+            font-size: 30px;
+        }
+        .main-header p { margin-top: 8px; color: #e4eee6; }
+        .main-nav {
+            background: #092b1d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 16px;
+        }
+        .main-nav a, .main-nav button {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .main-nav a:hover, .main-nav button:hover { color: #f0ca58; }
+        .nav-logout { display: inline; }
+        .site-footer {
+            background: #071d15;
+            color: white;
+            text-align: center;
+            padding: 22px;
+        }
+        .message-area { text-align: center; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<header class="main-header">
+    <h1>🎱 SNOOKER GAMING CENTER</h1>
+    <p>Play • Practice • Challenge • Win</p>
+</header>
+
+<nav class="main-nav">
+    <a href="{% url 'home' %}">HOME</a>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'game' %}">PLAY GAME</a>
+        <a href="{% url 'tables' %}">TABLES</a>
+        <a href="{% url 'book_table' %}">BOOK TABLE</a>
+        <a href="{% url 'my_bookings' %}">MY BOOKINGS</a>
+
+        <form class="nav-logout" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">LOGOUT</button>
+        </form>
+    {% else %}
+        <a href="{% url 'register' %}">REGISTER</a>
+        <a href="{% url 'login' %}">LOGIN</a>
+    {% endif %}
+</nav>
+
+{% if messages %}
+    <div class="message-area">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="site-footer">
+    <p>© 2026 Snooker Gaming Center | Enjoy Your Game</p>
+</footer>
+
+</body>
+</html>
